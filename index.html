@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="icon" type="image/png" href="assets/tlcoachfit-logo.png">
+<meta name="theme-color" content="#07111f">
+<title>TLcoachfit — Training & Progress</title>
+<style>
+:root{--bg:#07111f;--card:#0d1b2d;--card2:#12243a;--text:#f4f8ff;--muted:#91a4bc;--blue:#2187ff;--green:#23d39b;--orange:#ff9f43;--red:#ff5c67;--line:#20344d}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#06101d,#09182a 55%,#06101c);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,select{font:inherit}button{cursor:pointer}.app{max-width:1180px;margin:auto;min-height:100vh;padding:18px 18px 95px}
+header{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:20px}.brand{display:flex;align-items:center;gap:10px;font-size:24px;font-weight:850;letter-spacing:-.5px}.brand-logo{width:44px;height:44px;border-radius:12px;object-fit:cover;box-shadow:0 4px 18px #0007}.brand-name{background:linear-gradient(90deg,#fff,#23d39b);-webkit-background-clip:text;background-clip:text;color:transparent}
+.iconbtn{width:42px;height:42px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:#fff}
+nav{position:fixed;z-index:10;bottom:14px;left:50%;transform:translateX(-50%);width:min(760px,calc(100% - 24px));display:flex;gap:5px;background:#091727eF;border:1px solid var(--line);backdrop-filter:blur(18px);padding:7px;border-radius:20px;box-shadow:0 15px 40px #0008}
+nav button{flex:1;border:0;background:transparent;color:var(--muted);padding:10px 7px;border-radius:14px;font-size:12px}nav button.active{background:#123258;color:#fff}
+.page{display:none}.page.active{display:block}.grid{display:grid;gap:14px}.grid4{grid-template-columns:repeat(4,1fr)}.grid3{grid-template-columns:repeat(3,1fr)}.grid2{grid-template-columns:repeat(2,1fr)}
+.card{background:linear-gradient(150deg,#0e1e32,#0a1727);border:1px solid var(--line);border-radius:20px;padding:18px}.hero{padding:22px;background:linear-gradient(130deg,#0c2543,#0c1728 70%);overflow:hidden;position:relative}.hero:after{content:"";position:absolute;width:180px;height:180px;border-radius:50%;background:#1684ff1c;right:-55px;top:-65px}
+h1{font-size:30px;margin:4px 0 6px;letter-spacing:-1px}h2{font-size:20px;margin:0 0 12px}h3{margin:0 0 6px}.muted{color:var(--muted)}.small{font-size:12px;color:var(--muted)}.value{font-size:26px;font-weight:800}.row{display:flex;align-items:center;justify-content:space-between;gap:10px}.pill{display:inline-flex;align-items:center;gap:5px;padding:6px 10px;border-radius:999px;background:#16304d;color:#a9d3ff;font-size:12px}.progress{height:8px;background:#1a2a3d;border-radius:20px;overflow:hidden}.progress>i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--green));border-radius:20px}
+.program{min-height:160px;display:flex;flex-direction:column;justify-content:space-between;background-size:cover;background-position:center}.program.blue{background:linear-gradient(135deg,#0b3970,#10243a)}.program.red{background:linear-gradient(135deg,#65212b,#261622)}.program.green{background:linear-gradient(135deg,#064b42,#102b2b)}.program.purple{background:linear-gradient(135deg,#3b2668,#18203d)}
+.btn{border:0;border-radius:13px;padding:11px 15px;background:var(--blue);color:#fff;font-weight:750}.btn.secondary{background:#172a41}.btn.green{background:#159e79}.btn.danger{background:#c63b49}.btn.full{width:100%}
+.stat{padding:15px}.stat .emoji{font-size:20px}.stat strong{display:block;font-size:21px;margin-top:4px}.section{margin-top:20px}.exercise{display:flex;align-items:center;gap:13px;padding:13px;border:1px solid var(--line);background:#0b1929;border-radius:16px;margin:9px 0}.thumb{width:58px;height:58px;border-radius:14px;background:linear-gradient(135deg,#173e66,#102032);display:grid;place-items:center;font-size:25px}.exercise .grow{flex:1}.tag{font-size:11px;color:#9fc4e9}
+.formgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.field label{display:block;color:var(--muted);font-size:12px;margin-bottom:6px}.field input,.field select{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);background:#081524;color:#fff;outline:none}
+.modal{position:fixed;inset:0;background:#0009;z-index:30;display:none;align-items:flex-end;justify-content:center;padding:14px}.modal.show{display:flex}.sheet{width:min(760px,100%);max-height:92vh;overflow:auto;background:#0b1929;border:1px solid var(--line);border-radius:24px;padding:20px}
+.timer{font-size:70px;font-weight:850;text-align:center;letter-spacing:2px;margin:20px 0}.timerCircle{width:230px;height:230px;margin:10px auto;border-radius:50%;display:grid;place-items:center;border:10px solid #17365a;box-shadow:0 0 0 8px #0c2139}.timerCircle.running{border-color:var(--green);box-shadow:0 0 35px #23d39b33}
+
+.calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}.calendar-weekdays{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin:0 0 6px}.calendar-weekdays span{text-align:center;color:#8eafd1;font-size:10px;font-weight:700;text-transform:uppercase}.day{min-height:68px;min-width:0;border:1px solid var(--line);border-radius:10px;padding:7px;background:#0a1727;font-size:12px}.day.done{background:#0c352d;border-color:#166f5d}.day.today{outline:2px solid var(--blue)}.chart{height:180px;display:flex;align-items:flex-end;gap:10px;padding:20px 8px 5px}.bar{flex:1;background:linear-gradient(#2187ff,#23d39b);border-radius:8px 8px 2px 2px;min-height:10px;position:relative}.bar span{position:absolute;top:-19px;left:50%;transform:translateX(-50%);font-size:10px;color:var(--muted)}
+.toast{position:fixed;z-index:50;left:50%;bottom:92px;transform:translateX(-50%) translateY(20px);background:#11273f;border:1px solid var(--line);padding:11px 15px;border-radius:13px;opacity:0;transition:.25s}.toast.show{opacity:1;transform:translateX(-50%)}
+@media(max-width:760px){.grid4,.grid3{grid-template-columns:repeat(2,1fr)}.grid2,.formgrid{grid-template-columns:1fr 1fr}.hero{padding:18px}h1{font-size:25px}.timer{font-size:56px}.timerCircle{width:200px;height:200px}}
+@media(max-width:480px){.grid4,.grid3,.grid2,.formgrid{grid-template-columns:1fr 1fr}.card{padding:14px}.value{font-size:22px}.app{padding:12px 12px 100px}.brand{font-size:21px}}
+
+.video-coach{height:230px;border-radius:18px;background:#061321;border:1px solid #20344d;overflow:hidden;position:relative}
+.video-coach video{width:100%;height:100%;object-fit:cover;background:#061321}
+.video-overlay{position:absolute;inset:auto 12px 12px 12px;background:#000a;border-radius:10px;padding:8px 11px;font-size:12px;color:#fff}
+.video-note{font-size:11px;color:var(--muted);margin-top:7px}.video-source{font-size:10px;color:#9fc4e9;margin-top:6px}.video-actions{display:flex;gap:8px;margin-top:9px}.video-error{display:none;margin-top:8px;padding:10px;border:1px solid #6b3340;background:#2b1720;border-radius:12px;color:#ffd9df;font-size:12px}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="brand"><img src="assets/tlcoachfit-logo.png" alt="TLcoachfit" class="brand-logo"><span class="brand-name">TLcoachfit</span></div><button class="iconbtn" onclick="openProfile()">⚙️</button></header>
+
+<section id="home" class="page active">
+<div class="card hero"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><img src="assets/tlcoachfit-logo.png" alt="" style="width:54px;height:54px;border-radius:14px;object-fit:cover"><div><div class="small">TLCOACHFIT</div><div style="font-weight:800">Entraîne · Progresse · Dépasse-toi</div></div></div><div class="small">TABLEAU DE BORD</div><h1>Bonjour ! 👋</h1><p class="muted">Prêt pour ta prochaine séance ?</p>
+<div class="grid grid4" style="margin-top:16px">
+<div><div class="small">Poids</div><div class="value" id="dashWeight">88 kg</div></div>
+<div><div class="small">Taille</div><div class="value" id="dashHeight">186 cm</div></div>
+<div><div class="small">Âge</div><div class="value" id="dashAge">30 ans</div></div>
+<div><div class="small">IMC</div><div class="value" id="dashBmi">25.4</div></div>
+</div></div>
+<div class="section grid grid4">
+<div class="card stat"><span class="emoji">🏋️</span><strong id="statSessions">0</strong><span class="small">séances</span></div>
+<div class="card stat"><span class="emoji">🔥</span><strong id="statCalories">0</strong><span class="small">kcal</span></div>
+<div class="card stat"><span class="emoji">📏</span><strong id="statDistance">0</strong><span class="small">km</span></div>
+<div class="card stat"><span class="emoji">⏱️</span><strong id="statTime">0 min</strong><span class="small">entraînement</span></div>
+</div>
+<div class="section card"><div class="row"><h2>Mon objectif</h2><button class="btn secondary" onclick="openProfile()">Modifier</button></div><div class="row"><div><b id="goalText">Perte de graisse</b><div class="small" id="goalWeight">Objectif : 80 kg</div></div><span class="pill">🎯 En cours</span></div><div class="progress" style="margin-top:14px"><i id="goalProgress" style="width:35%"></i></div></div>
+<div class="section"><div class="row"><h2>Mes programmes</h2><button class="btn secondary" onclick="showPage('programs')">Voir tout</button></div><div class="grid grid2">
+<div class="card program blue"><div><span class="pill">💪 4–5 séances</span></div><div><h3>Musculation</h3><div class="small">Prise de muscle & force</div></div><button class="btn" onclick="openWorkout('muscle')">Commencer</button></div>
+<div class="card program red"><div><span class="pill">🔥 3–5 séances</span></div><div><h3>Perte de graisse</h3><div class="small">Sèche & définition</div></div><button class="btn danger" onclick="openWorkout('fat')">Commencer</button></div>
+<div class="card program green"><div><span class="pill">🏃 3–6 séances</span></div><div><h3>Cardio</h3><div class="small">Endurance & santé</div></div><button class="btn green" onclick="openWorkout('cardio')">Démarrer</button></div>
+<div class="card program purple"><div><span class="pill">🎯 Personnalisé</span></div><div><h3>Mon programme</h3><div class="small">Selon ton objectif</div></div><button class="btn" onclick="showPage('programs')">Choisir</button></div>
+</div></div>
+</section>
+
+<section id="programs" class="page">
+<div class="row"><div><div class="small">BIBLIOTHÈQUE</div><h1>Programmes</h1></div><button class="btn" onclick="openWorkout('custom')">＋ Créer</button></div>
+<div class="section grid grid2">
+<div class="card program blue"><h2>💪 Musculation</h2><p class="muted">4–5 séances/semaine · 8–12 semaines</p><button class="btn full" onclick="openWorkout('muscle')">Voir le programme</button></div>
+<div class="card program red"><h2>🔥 Brûler les graisses</h2><p class="muted">3–5 séances/semaine · HIIT + cardio</p><button class="btn full" onclick="openWorkout('fat')">Voir le programme</button></div>
+<div class="card program green"><h2>🏃 Cardio</h2><p class="muted">Course · vélo · rameur · marche</p><button class="btn green full" onclick="openWorkout('cardio')">Voir le programme</button></div>
+<div class="card program purple"><h2>⚡ HIIT</h2><p class="muted">Intervalles · intensité · récupération</p><button class="btn full" onclick="openWorkout('hiit')">Voir le programme</button></div>
+</div>
+<div class="section card"><h2>Exercices disponibles</h2><div id="exerciseList"></div></div>
+</section>
+
+<section id="sessions" class="page">
+<div class="row"><div><div class="small">PLANIFICATION</div><h1>Mes séances</h1></div><button class="btn" onclick="openCalendar()">＋ Ajouter</button></div>
+<div class="section card"><div class="row"><div><h2>Calendrier</h2><div class="small">Planning automatique : 5 jours d’entraînement + 2 jours de repos</div></div><span class="pill">5 + 2</span></div><div id="calendar" class="calendar"></div></div>
+<div class="section card"><div class="row"><div><h2>Programme de la semaine</h2><div class="small" id="weekSummary">Génère ton programme depuis Profil.</div></div><button class="btn secondary" onclick="showPage('profile')">Modifier</button></div><div id="weekPlan"></div></div>
+<div class="section card"><h2>Historique récent</h2><div id="history"></div></div>
+</section>
+
+<section id="stats" class="page">
+<div class="small">PERFORMANCE</div><h1>Statistiques</h1>
+<div class="section grid grid2">
+<div class="card"><h2>Poids</h2><div class="value" id="statsWeight">88 kg</div><div class="small">Objectif 80 kg</div><div class="chart" id="weightChart"></div></div>
+<div class="card"><h2>Activité</h2><div class="value" id="statsActivity">0 séances</div><div class="small">Ce mois-ci</div><div class="chart" id="activityChart"></div></div>
+</div>
+<div class="section grid grid4"><div class="card stat"><span class="small">Calories</span><strong id="sCal">0</strong></div><div class="card stat"><span class="small">Distance</span><strong id="sDist">0 km</strong></div><div class="card stat"><span class="small">Temps</span><strong id="sTime">0 min</strong></div><div class="card stat"><span class="small">Meilleure série</span><strong>—</strong></div></div>
+</section>
+
+<section id="profile" class="page">
+<div class="small">MES DONNÉES</div><h1>Profil & IMC</h1>
+<div class="section card"><div class="formgrid">
+<div class="field"><label>Poids (kg)</label><input id="pWeight" type="number" step=".1"></div>
+<div class="field"><label>Taille (cm)</label><input id="pHeight" type="number"></div>
+<div class="field"><label>Date de naissance</label><input id="pBirth" type="date"></div>
+<div class="field"><label>Objectif</label><select id="pGoal"><option>Perte de graisse</option><option>Prise de muscle</option><option>Maintien</option><option>Endurance</option></select></div>
+<div class="field"><label>Poids cible (kg)</label><input id="pTarget" type="number" step=".1"></div>
+<div class="field"><label>Sexe</label><select id="pSex"><option>Homme</option><option>Femme</option></select></div>
+<div class="field"><label>Niveau</label><select id="pLevel"><option>Débutant</option><option>Intermédiaire</option><option>Avancé</option></select></div>
+<div class="field"><label>Jours d'entraînement</label><select id="pDays"><option value="3">3 jours</option><option value="4">4 jours</option><option value="5" selected>5 jours</option></select></div>
+</div><button class="btn full" style="margin-top:14px" onclick="saveProfile()">Enregistrer</button></div>
+<div class="section card">
+<div class="row"><div><h2>🤖 Générateur de programme</h2><div class="small">TLcoachfit construit automatiquement ta semaine selon ton objectif, ton niveau et tes disponibilités.</div></div><span class="pill">5 + 2 repos</span></div>
+<div class="grid grid2" style="margin-top:14px">
+<div class="field"><label>Objectif principal</label><select id="gGoal"><option>Prise de muscle</option><option>Perte de graisse</option><option>Cardio / endurance</option><option>Remise en forme</option></select></div>
+<div class="field"><label>Niveau</label><select id="gLevel"><option>Débutant</option><option>Intermédiaire</option><option>Avancé</option></select></div>
+<div class="field"><label>Nombre de jours</label><select id="gDays"><option value="3">3 jours</option><option value="4">4 jours</option><option value="5" selected>5 jours</option></select></div>
+<div class="field"><label>Durée cible</label><select id="gDuration"><option>30–45 min</option><option selected>45–60 min</option><option>60–75 min</option></select></div>
+</div>
+<button class="btn full" style="margin-top:14px" onclick="generateProgram()">✨ Générer mon programme</button>
+<div id="generatedProgram" class="section"></div>
+</div>
+<div class="section card"><div class="row"><div><h2>IMC</h2><div class="small">Indice de masse corporelle</div></div><div class="value" id="bmiBig">25.4</div></div><div class="progress" style="margin:18px 0"><i id="bmiBar" style="width:50%"></i></div><div class="row"><span class="small">&lt;18.5 Maigreur</span><span class="small">18.5–24.9 Normal</span><span class="small">25–29.9 Surpoids</span><span class="small">≥30 Obésité</span></div><div class="section pill" id="bmiLabel">Surpoids léger</div></div>
+</section>
+</div>
+
+<nav>
+<button class="active" data-page="home" onclick="showPage('home')">⌂<br>Accueil</button>
+<button data-page="programs" onclick="showPage('programs')">▣<br>Programmes</button>
+<button data-page="sessions" onclick="showPage('sessions')">◫<br>Séances</button>
+<button data-page="stats" onclick="showPage('stats')">▥<br>Stats</button>
+<button data-page="profile" onclick="showPage('profile')">♙<br>Profil</button>
+</nav>
+
+<div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const APP_VERSION="V9";
+const defaultData={weight:88,height:186,birth:"1996-03-15",goal:"Perte de graisse",target:80,sex:"Homme",level:"Débutant",days:5,sessions:0,calories:0,distance:0,time:0,history:[],weights:[88,87.7,87.4,87.1,86.8,88]};
+let data=JSON.parse(localStorage.getItem("fitcoachData")||"null")||defaultData;
+try{data.appVersion=APP_VERSION;localStorage.setItem("fitcoachData",JSON.stringify(data))}catch(e){}
+const exercises=[
+{name:"Développé couché",muscle:"Pectoraux · épaules · triceps",sets:4,reps:"8–12",rest:90,icon:"🏋️",video:"https://ymove.app/api/free/dd7e706c-2086-4f4b-867f-d7fece2f720d?type=video"},
+{name:"Développé incliné haltères",muscle:"Haut des pectoraux",sets:4,reps:"8–12",rest:90,icon:"💪",video:"https://ymove.app/api/free/dd7e706c-2086-4f4b-867f-d7fece2f720d?type=video"},
+{name:"Écarté haltères",muscle:"Pectoraux",sets:3,reps:"10–15",rest:60,icon:"🪽",video:"https://ymove.app/api/free/8de0e422-f771-4916-8bab-3ca29cc2abe5?type=video"},
+{name:"Pompes",muscle:"Pectoraux · triceps",sets:3,reps:"10–20",rest:60,icon:"🤸",video:"https://ymove.app/api/free/dd7e706c-2086-4f4b-867f-d7fece2f720d?type=video"},
+{name:"Dips",muscle:"Pectoraux · triceps",sets:3,reps:"8–12",rest:90,icon:"💪",video:"https://ymove.app/api/free/20cc4825-dd52-4887-99db-c492546741dc?type=video"},
+{name:"Squat",muscle:"Quadriceps · fessiers",sets:4,reps:"8–10",rest:120,icon:"🦵",video:"https://ymove.app/api/free/fd0eaa34-d14b-4421-b41c-1669f93253b3?type=video"},
+{name:"Presse à jambes",muscle:"Quadriceps · fessiers",sets:4,reps:"10–12",rest:120,icon:"🦵",video:"https://ymove.app/api/free/d0bc669e-0d78-46f0-95f1-86503ab746e1?type=video"},
+{name:"Fentes",muscle:"Jambes · fessiers",sets:3,reps:"10 / jambe",rest:90,icon:"🦵",video:"https://ymove.app/api/free/a2a797d0-f6f6-436e-8616-6c1d93e73d67?type=video"},
+{name:"Soulevé de terre",muscle:"Chaîne postérieure",sets:4,reps:"6–10",rest:150,icon:"🏋️",video:"https://ymove.app/api/free/b59952ca-1551-4c07-835d-ab78bfe9953c?type=video"},
+{name:"Hip thrust",muscle:"Fessiers",sets:4,reps:"8–12",rest:90,icon:"🍑",video:"https://ymove.app/api/free/5611abf4-57f7-4153-b29d-a17cd7e2907d?type=video"},
+{name:"Mollets debout",muscle:"Mollets",sets:4,reps:"12–20",rest:45,icon:"🦶",video:"https://ymove.app/api/free/af0c3d19-5ee2-4a19-8688-f8504bb33e3c?type=video"},
+{name:"Tirage vertical",muscle:"Dos · biceps",sets:4,reps:"8–12",rest:90,icon:"🔩",video:"https://ymove.app/api/free/5971eaa2-5264-49cc-99c2-1310305c5342?type=video"},
+{name:"Tractions",muscle:"Dos · biceps",sets:4,reps:"6–10",rest:120,icon:"🧗",video:"https://ymove.app/api/free/5971eaa2-5264-49cc-99c2-1310305c5342?type=video"},
+{name:"Rowing barre",muscle:"Dos · biceps",sets:4,reps:"8–12",rest:90,icon:"🏋️",video:"https://ymove.app/api/free/d3fece95-c7e2-4794-ba8f-65a5b3e30a28?type=video"},
+{name:"Rowing haltère",muscle:"Dos",sets:3,reps:"10–12",rest:75,icon:"💪",video:"https://ymove.app/api/free/d3fece95-c7e2-4794-ba8f-65a5b3e30a28?type=video"},
+{name:"Tirage horizontal",muscle:"Dos",sets:3,reps:"10–15",rest:75,icon:"🔩",video:"https://ymove.app/api/free/77976f52-b13a-4fd0-addf-f4404e3a8e95?type=video"},
+{name:"Élévations latérales",muscle:"Épaules",sets:3,reps:"12–15",rest:60,icon:"🏋️",video:"https://ymove.app/api/free/a16f0235-20eb-4306-b9cc-c01ae51b3b9b?type=video"},
+{name:"Développé épaules",muscle:"Épaules · triceps",sets:4,reps:"8–12",rest:90,icon:"🏋️",video:"https://ymove.app/api/free/3880aaa4-e1c0-4153-95d0-da44ea01e099?type=video"},
+{name:"Oiseau haltères",muscle:"Arrière d'épaule",sets:3,reps:"12–15",rest:60,icon:"🪽",video:"https://ymove.app/api/free/710d4aa4-e4ea-4fad-8930-a7b9bf582cae?type=video"},
+{name:"Curl biceps",muscle:"Biceps",sets:3,reps:"10–15",rest:60,icon:"💪",video:"https://ymove.app/api/free/f32940f7-7da6-4741-a72f-13e52c56a79c?type=video"},
+{name:"Curl marteau",muscle:"Biceps · avant-bras",sets:3,reps:"10–15",rest:60,icon:"💪",video:"https://ymove.app/api/free/b11e6c6f-b2e8-44ca-95dc-adf0dcd34426?type=video"},
+{name:"Extension triceps",muscle:"Triceps",sets:3,reps:"10–15",rest:60,icon:"🔥",video:"https://ymove.app/api/free/3875dae4-14a6-4533-84d3-ef9acbadbaea?type=video"},
+{name:"Planche",muscle:"Abdominaux · gainage",sets:3,reps:"30–60 s",rest:45,icon:"🧘",video:"https://ymove.app/api/free/3a47b35a-a5ee-4b0c-8780-ba368d122f10?type=video"},
+{name:"Crunch",muscle:"Abdominaux",sets:3,reps:"15–25",rest:45,icon:"🔥",video:"https://ymove.app/api/free/3a47b35a-a5ee-4b0c-8780-ba368d122f10?type=video"},
+{name:"Mountain climbers",muscle:"Cardio · abdos",sets:4,reps:"30–45 s",rest:30,icon:"🏃",video:"https://videos.pexels.com/video-files/6525467/6525467-hd_1080_1920_30fps.mp4",source:"Pexels"},
+{name:"Burpees",muscle:"Full body · cardio",sets:4,reps:"8–15",rest:60,icon:"🔥",video:"https://videos.pexels.com/video-files/8858142/8858142-uhd_3840_2160_25fps.mp4",source:"Pexels"},
+{name:"Tapis de course",muscle:"Cardio · endurance",sets:1,reps:"20–45 min",rest:0,icon:"🏃",video:"https://videos.pexels.com/video-files/4920821/4920821-hd_1920_1080_25fps.mp4",source:"Pexels"},
+{name:"Marche active",muscle:"Cardio doux",sets:1,reps:"30–60 min",rest:0,icon:"🚶",video:"https://videos.pexels.com/video-files/6454292/6454292-uhd_2160_3840_24fps.mp4",source:"Pexels"},
+{name:"Vélo",muscle:"Cardio · jambes",sets:1,reps:"30–60 min",rest:0,icon:"🚴",video:"https://videos.pexels.com/video-files/4108627/4108627-uhd_3840_2160_25fps.mp4",source:"Pexels"},
+{name:"Rameur",muscle:"Cardio · full body",sets:1,reps:"20–40 min",rest:0,icon:"🚣",video:"https://videos.pexels.com/video-files/32239224/13749257_3840_2160_24fps.mp4",source:"Pexels"},
+{name:"HIIT",muscle:"Intervalles · cardio",sets:8,reps:"30 s effort",rest:30,icon:"⚡",video:"https://videos.pexels.com/video-files/8858142/8858142-uhd_3840_2160_25fps.mp4",source:"Pexels"},
+];
+function videoPoster(e){const m=String(e.video).match(/api\/free\/([^?]+)/);return m?`https://ymove.app/api/free/${m[1]}?type=thumbnail`:""}
+let timer=null,timerSec=0,cardio=false,cardioStart=0,cardioElapsed=0,cardioInterval=null;
+
+function save(){localStorage.setItem("fitcoachData",JSON.stringify(data))}
+function age(){let b=new Date(data.birth),n=new Date(),a=n.getFullYear()-b.getFullYear();if(n<new Date(n.getFullYear(),b.getMonth(),b.getDate()))a--;return a}
+function bmi(){return data.weight/Math.pow(data.height/100,2)}
+function showPage(id){document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));document.getElementById(id).classList.add("active");document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("active",x.dataset.page===id));render()}
+function toast(t){let x=document.getElementById("toast");x.textContent=t;x.classList.add("show");setTimeout(()=>x.classList.remove("show"),1800)}
+function render(){
+let b=bmi();document.getElementById("dashWeight").textContent=data.weight+" kg";document.getElementById("dashHeight").textContent=data.height+" cm";document.getElementById("dashAge").textContent=age()+" ans";document.getElementById("dashBmi").textContent=b.toFixed(1);
+document.getElementById("statSessions").textContent=data.sessions;document.getElementById("statCalories").textContent=Math.round(data.calories);document.getElementById("statDistance").textContent=data.distance.toFixed(1);document.getElementById("statTime").textContent=Math.round(data.time)+" min";
+document.getElementById("goalText").textContent=data.goal;document.getElementById("goalWeight").textContent="Objectif : "+data.target+" kg";
+let pct=Math.max(5,Math.min(100,((data.weight-data.target)/Math.max(1,data.weight-60))*100));document.getElementById("goalProgress").style.width=(100-pct)+"%";
+document.getElementById("bmiBig").textContent=b.toFixed(1);document.getElementById("bmiBar").style.width=Math.min(100,b/40*100)+"%";document.getElementById("bmiLabel").textContent=b<18.5?"Maigreur":b<25?"IMC normal":b<30?"Surpoids léger":"Obésité";
+["pWeight","pHeight","pBirth","pGoal","pTarget","pSex","pLevel","pDays"].forEach((id)=>{
+let v=id==="pWeight"?data.weight:id==="pHeight"?data.height:id==="pBirth"?data.birth:id==="pGoal"?data.goal:id==="pTarget"?data.target:id==="pSex"?data.sex:id==="pLevel"?(data.level||"Débutant"):(data.days||5);
+let el=document.getElementById(id); if(el) el.value=v;
+});
+document.getElementById("statsWeight").textContent=data.weight+" kg";document.getElementById("statsActivity").textContent=data.sessions+" séances";document.getElementById("sCal").textContent=Math.round(data.calories);document.getElementById("sDist").textContent=data.distance.toFixed(1)+" km";document.getElementById("sTime").textContent=Math.round(data.time)+" min";
+document.getElementById("exerciseList").innerHTML=exercises.map((e,i)=>`<div class="exercise"><div class="thumb">${e.icon}</div><div class="grow"><b>${e.name}</b><div class="tag">${e.muscle} · ${e.sets} × ${e.reps}</div></div><button class="btn secondary" onclick="openExercise(${i})">Voir</button></div>`).join("");
+renderCalendar();renderWeekPlan();renderHistory();renderCharts();
+}
+function openModal(html){document.getElementById("sheet").innerHTML=html;document.getElementById("modal").classList.add("show")}
+function closeModal(){document.getElementById("modal").classList.remove("show");clearInterval(timer);clearInterval(cardioInterval)}
+document.getElementById("modal").addEventListener("click",e=>{if(e.target.id==="modal")closeModal()});
+function openProfile(){showPage("profile")}
+function saveProfile(){
+data.weight=+pWeight.value;data.height=+pHeight.value;data.birth=pBirth.value;data.goal=pGoal.value;data.target=+pTarget.value;data.sex=pSex.value;
+data.level=pLevel.value;data.days=+pDays.value;data.weights.push(data.weight);save();toast("Profil enregistré ✓");showPage("home")
+}
+function openExercise(i){
+  const e=exercises[i];
+  openModal(`<div class="row"><div><div class="small">DÉMONSTRATION RÉELLE</div><h1>${e.name}</h1></div><button class="iconbtn" onclick="closeModal()">✕</button></div>
+  <div class="video-coach">
+    <video id="coachVideo" controls playsinline webkit-playsinline preload="metadata" muted poster="${videoPoster(e)}" src="${e.video}">
+      Ton navigateur ne peut pas lire cette vidéo.
+    </video>
+    <div class="video-overlay">🎬 Vidéo réelle · personne filmée</div>
+  </div>
+  <div class="video-actions"><button class="btn" onclick="playCoachVideo()">▶ Lire la démonstration</button><button class="btn secondary" onclick="restartCoachVideo()">↺ Rejouer</button></div>
+  <a class="btn secondary full" href="${e.video}" target="_blank" rel="noopener" style="display:block;text-align:center;margin-top:8px">↗ Ouvrir la vidéo</a>
+  <div id="videoError" class="video-error">Impossible de charger la vidéo. Utilise « Ouvrir la vidéo » pour tester le fichier MP4 directement.</div>
+  <div class="video-note">Vidéo réelle filmée par une personne. Le mouvement, le placement et le rythme sont visibles.</div><div class="small" style="margin-top:6px">Source : ${e.source||"YMove"}. La vidéo est chargée depuis sa source externe.</div>
+  <div class="section card"><h2>Comment faire ?</h2><ol><li>Installe-toi correctement et garde une posture stable.</li><li>Effectue le mouvement lentement et sans à-coups.</li><li>Contrôle la phase de descente puis remonte en expirant.</li><li>Arrête la série si ta technique se dégrade.</li></ol></div>
+  <div class="grid grid2"><div class="card"><span class="small">Séries</span><div class="value">${e.sets}</div></div><div class="card"><span class="small">Répétitions</span><div class="value">${e.reps}</div></div></div>
+  <button class="btn full section" onclick="startExercise(${i})">▶ Démarrer l'exercice</button>`);
+  const v=document.getElementById('coachVideo');
+  if(v){
+    v.addEventListener('error',()=>{const er=document.getElementById('videoError');if(er)er.style.display='block'});
+    v.addEventListener('loadeddata',()=>{const er=document.getElementById('videoError');if(er)er.style.display='none'});
+    v.addEventListener('canplay',()=>{const er=document.getElementById('videoError');if(er)er.style.display='none'});
+  }
+}
+function playCoachVideo(){const v=document.getElementById('coachVideo');if(!v)return;v.muted=true;v.load();setTimeout(()=>v.play().catch(()=>{const er=document.getElementById('videoError');if(er)er.style.display='block'}),120);}
+function restartCoachVideo(){const v=document.getElementById('coachVideo');if(!v)return;v.pause();v.currentTime=0;playCoachVideo();}
+
+function startExercise(i){
+  const e=exercises[i];
+  timerSec=0;
+  openModal(`<div class="row"><div><div class="small">EXERCICE</div><h1>${e.name}</h1><span class="pill">${e.reps} · repos ${e.rest}s</span></div><button class="iconbtn" onclick="closeModal()">✕</button></div>
+  ${exerciseVideoBlock(e,i)}
+  <div class="timerCircle" id="timerCircle"><div class="timer" id="timer">00:00</div></div>
+  <div class="row"><button class="btn secondary" onclick="timerSec=Math.max(0,timerSec-10);updateTimer()">−10s</button><button class="btn" id="timerBtn" onclick="toggleTimer()">▶ Démarrer</button><button class="btn secondary" onclick="timerSec+=10;updateTimer()">+10s</button></div>
+  <div class="section card"><div class="row"><span>🏋️ ${e.sets} séries</span><span>🔁 ${e.reps}</span><span>⏱️ ${e.rest}s repos</span></div></div>
+  <button class="btn green full" onclick="finishWorkout('${e.name.replace(/'/g,"\\'")}')">✓ Terminer l'exercice</button>`);
+}
+function exerciseVideoBlock(e,i){
+ return `<div class="video-coach"><video id="coachVideo" controls playsinline webkit-playsinline preload="metadata" muted poster="${videoPoster(e)}" src="${e.video}"></video><div class="video-overlay">🎬 Vidéo réelle · personne filmée</div></div>
+ <div class="video-actions"><button class="btn" onclick="playCoachVideo()">▶ Lire la démonstration</button><button class="btn secondary" onclick="restartCoachVideo()">↺ Rejouer</button></div>
+ <a class="btn secondary full" href="${e.video}" target="_blank" rel="noopener" style="display:block;text-align:center;margin-top:8px">↗ Ouvrir la vidéo</a>
+ <div id="videoError" class="video-error">Impossible de charger la vidéo dans le lecteur intégré. « Ouvrir la vidéo » permet de tester directement le fichier.</div>
+ <div class="video-note">Vidéo réelle filmée par une personne. Le mouvement, le placement et le rythme sont visibles.</div><div class="small" style="margin-top:6px">Source : ${e.source||"YMove"}. La vidéo est chargée depuis sa source externe.</div>`;
+}
+function toggleTimer(){if(timer){clearInterval(timer);timer=null;timerBtn.textContent="▶ Reprendre";timerCircle.classList.remove("running")}else{timer=setInterval(()=>{timerSec++;updateTimer()},1000);timerBtn.textContent="⏸ Pause";timerCircle.classList.add("running")}}
+function updateTimer(){let m=String(Math.floor(timerSec/60)).padStart(2,"0"),s=String(timerSec%60).padStart(2,"0");let el=document.getElementById("timer");if(el)el.textContent=m+":"+s}
+function finishWorkout(name){clearInterval(timer);data.sessions++;data.time+=Math.max(1,Math.round(timerSec/60));data.history.unshift({date:new Date().toLocaleDateString("fr-FR"),name:name,duration:Math.max(1,Math.round(timerSec/60)),cal:0,dist:0});save();toast("Exercice enregistré ✓");closeModal();render()}
+
+// Guided workout: warm-up -> exercise video -> set timer -> automatic rest -> next set/exercise.
+function sessionExercisesForProgram(name){
+ const map={
+  "Haut du corps":[0,1,11,16,19,21],"Bas du corps":[5,6,7,9,10,22],"Push":[0,1,3,16,21],"Pull":[11,12,13,14,19,20],"Jambes":[5,6,7,8,9,10],
+  "Full body + HIIT":[5,0,11,22,30],"Full body":[5,0,11,16,22],"Cardio + abdos":[26,22,24],"Circuit training":[3,5,24,25,30],
+  "Tapis · endurance":[26],"Intervalles":[26,30],"Vélo / rameur":[28,29],"Tapis · tempo":[26],"Cardio léger":[27],"Cardio doux":[27],
+  "Full body léger":[3,5,22],"Mobilité + cardio":[27,22],"Marche active":[27]
+ };
+ return (map[name]||[0,5,11,22]).map(i=>exercises[i]);
+}
+function startGuidedSession(program){
+ const list=sessionExercisesForProgram(program);
+ if(!list.length){toast("Aucun exercice dans cette séance");return}
+ guidedSession={name:program,items:list,totalSets:list.reduce((a,e)=>a+e.sets,0)};
+ guidedExercisePos=0;guidedSet=1;guidedPhase='warmup';guidedSeconds=30;guidedElapsed=0;guidedStartedAt=Date.now();
+ renderGuided();
+}
+function renderGuided(){
+ if(!guidedSession)return;
+ const e=guidedSession.items[guidedExercisePos];
+ if(guidedPhase==='warmup'){
+  openModal(`<div class="row"><div><div class="small">PRÉPARATION · ${guidedSession.name}</div><h1>🔥 Échauffement</h1></div><button class="iconbtn" onclick="exitGuided()">✕</button></div>
+   <div class="card" style="text-align:center;padding:28px"><div style="font-size:70px">🏃</div><h2>Prépare ton corps</h2><p class="muted">30 secondes · marche sur place, rotations des épaules et mobilisations douces.</p><div class="timer" id="guidedTimer">00:30</div><div class="progress"><i id="guidedProgress" style="width:0%"></i></div></div>
+   <button class="btn full" id="guidedBtn" onclick="toggleGuided()">▶ Démarrer l'échauffement</button>`);
+  return;
+ }
+ if(guidedPhase==='rest'){
+  openModal(`<div class="row"><div><div class="small">RÉCUPÉRATION · ${guidedSession.name}</div><h1>⏱️ Repos</h1></div><button class="iconbtn" onclick="exitGuided()">✕</button></div>
+   <div class="timerCircle running"><div class="timer" id="guidedTimer">${fmt(guidedSeconds)}</div></div><p class="muted" style="text-align:center">Respire, hydrate-toi et prépare le prochain exercice.</p><button class="btn full" onclick="skipGuidedRest()">Passer le repos →</button>`);
+  startGuidedClock();return;
+ }
+ openModal(`<div class="row"><div><div class="small">EXERCICE ${guidedExercisePos+1}/${guidedSession.items.length} · SÉRIE ${guidedSet}/${e.sets}</div><h1>${e.name}</h1><span class="pill">${e.reps} · repos ${e.rest}s</span></div><button class="iconbtn" onclick="exitGuided()">✕</button></div>
+ ${exerciseVideoBlock(e,guidedExercisePos)}
+ <div class="timerCircle" id="guidedCircle"><div class="timer" id="guidedTimer">00:00</div></div>
+ <p class="muted" style="text-align:center">Regarde la démonstration puis démarre le chrono de ta série.</p>
+ <button class="btn full" id="guidedBtn" onclick="toggleGuided()">▶ Démarrer la série</button>
+ <button class="btn secondary full section" onclick="finishGuidedSet()">✓ Série terminée</button>`);
+}
+function fmt(sec){return String(Math.floor(Math.max(0,sec)/60)).padStart(2,'0')+':'+String(Math.max(0,sec)%60).padStart(2,'0')}
+function startGuidedClock(){clearInterval(guidedInterval);guidedInterval=setInterval(()=>{guidedSeconds--;const el=document.getElementById('guidedTimer');if(el)el.textContent=fmt(guidedSeconds);const bar=document.getElementById('guidedProgress');if(bar)bar.style.width=Math.max(0,Math.min(100,(30-guidedSeconds)/30*100))+'%';if(guidedSeconds<=0){clearInterval(guidedInterval);guidedInterval=null;nextGuidedWarmup()}},1000)}
+function toggleGuided(){
+ if(guidedInterval){clearInterval(guidedInterval);guidedInterval=null;const b=document.getElementById('guidedBtn');if(b)b.textContent='▶ Reprendre';return}
+ if(guidedPhase==='warmup'){startGuidedClock();const b=document.getElementById('guidedBtn');if(b)b.textContent='⏸ Pause';return}
+ guidedInterval=setInterval(()=>{guidedSeconds++;const el=document.getElementById('guidedTimer');if(el)el.textContent=fmt(guidedSeconds)},1000);const b=document.getElementById('guidedBtn');if(b)b.textContent='⏸ Pause';
+}
+function nextGuidedWarmup(){guidedPhase='exercise';guidedSeconds=0;renderGuided()}
+function finishGuidedSet(){
+ clearInterval(guidedInterval);guidedInterval=null;
+ const e=guidedSession.items[guidedExercisePos];
+ if(guidedSet<e.sets){guidedSet++;guidedPhase='rest';guidedSeconds=e.rest||60;renderGuided();}
+ else if(guidedExercisePos<guidedSession.items.length-1){guidedExercisePos++;guidedSet=1;guidedPhase='rest';guidedSeconds=e.rest||60;renderGuided();}
+ else completeGuidedSession();
+}
+function skipGuidedRest(){clearInterval(guidedInterval);guidedInterval=null;guidedPhase='exercise';guidedSeconds=0;renderGuided()}
+function completeGuidedSession(){
+ clearInterval(guidedInterval);guidedInterval=null;
+ const mins=Math.max(1,Math.round((Date.now()-guidedStartedAt)/60000));
+ data.sessions++;data.time+=mins;data.history.unshift({date:new Date().toLocaleDateString('fr-FR'),name:guidedSession.name,duration:mins,cal:0,dist:0});save();
+ openModal(`<div style="text-align:center;padding:22px 8px"><div style="font-size:70px">🎉</div><div class="small">SÉANCE TERMINÉE</div><h1>Bravo !</h1><p class="muted">${guidedSession.name}</p><div class="grid grid2 section"><div class="card stat"><span class="small">Durée</span><strong>${mins} min</strong></div><div class="card stat"><span class="small">Exercices</span><strong>${guidedSession.items.length}</strong></div></div><button class="btn green full section" onclick="closeModal()">✓ Enregistrer et fermer</button></div>`);
+ guidedSession=null;
+ render();
+}
+function exitGuided(){clearInterval(guidedInterval);guidedInterval=null;guidedSession=null;closeModal()}
+
+function openWorkout(type){
+  const cfg={
+    muscle:{title:"💪 Musculation · prise de muscle",ids:[0,1,5,6,11,13,16,19,21]},
+    fat:{title:"🔥 Perte de graisse · sèche",ids:[3,7,22,24,25,30]},
+    custom:{title:"🎯 Bibliothèque complète",ids:exercises.map((_,i)=>i)},
+    cardio:{title:"🏃 Programme cardio",ids:[26,27,28,29]},
+    hiit:{title:"⚡ Programme HIIT",ids:[24,25,30]}
+  }[type]||null;
+  if(!cfg)return openCardio();
+  const list=cfg.ids.map(i=>exercises[i]);
+  openModal(`<div class="row"><div><div class="small">PROGRAMME</div><h1>${cfg.title}</h1></div><button class="iconbtn" onclick="closeModal()">✕</button></div><p class="muted">Chaque exercice possède sa démonstration vidéo. Le mode guidé enchaîne automatiquement les séries et les temps de repos.</p><button class="btn green full" onclick="startGuidedSession('${cfg.title.replace(/'/g,"\'")}')">▶ Démarrer la séance guidée</button>${list.map(e=>`<div class="exercise"><div class="thumb">${e.icon}</div><div class="grow"><b>${e.name}</b><div class="tag">${e.muscle} · ${e.sets} × ${e.reps}</div></div><button class="btn" onclick="openExercise(${exercises.indexOf(e)})">▶ Voir</button></div>`).join("")}`)
+}
+function openCardio(){cardio=true;cardioElapsed=0;const e=exercises[26];openModal(`<div class="row"><div><div class="small">CARDIO</div><h1>🏃 Tapis de course</h1></div><button class="iconbtn" onclick="closeModal()">✕</button></div>${exerciseVideoBlock(e,26)}<div class="grid grid2"><div class="field"><label>Objectif durée (min)</label><input id="cGoal" type="number" value="30"></div><div class="field"><label>Objectif distance (km)</label><input id="cDistGoal" type="number" value="5" step=".1"></div></div><div class="timerCircle" id="cardioCircle"><div class="timer" id="cardioTimer">00:00</div></div><div class="grid grid2"><div class="card stat"><span class="small">Distance</span><strong id="cDistance">0.00 km</strong></div><div class="card stat"><span class="small">Calories estimées</span><strong id="cCalories">0 kcal</strong></div><div class="card stat"><span class="small">Vitesse</span><strong><input id="cSpeed" type="number" value="10" step=".1" style="width:80px;background:#081524;border:1px solid #20344d;color:white;border-radius:8px;padding:5px"> km/h</strong></div><div class="card stat"><span class="small">Objectif</span><strong id="cProgress">0%</strong></div></div><button class="btn full" id="cardioBtn" onclick="toggleCardio()">▶ Démarrer</button><button class="btn green full section" onclick="finishCardio()">✓ Enregistrer le cardio</button>`)}
+function toggleCardio(){if(cardioInterval){clearInterval(cardioInterval);cardioInterval=null;cardioBtn.textContent="▶ Reprendre";return}cardioStart=Date.now()-cardioElapsed*1000;cardioInterval=setInterval(updateCardio,500);cardioBtn.textContent="⏸ Pause";cardioCircle.classList.add("running")}
+function updateCardio(){cardioElapsed=Math.floor((Date.now()-cardioStart)/1000);let m=String(Math.floor(cardioElapsed/60)).padStart(2,"0"),s=String(cardioElapsed%60).padStart(2,"0");cardioTimer.textContent=m+":"+s;let speed=+cSpeed.value||10,dist=speed*cardioElapsed/3600,cal=dist*data.weight*.9;cDistance.textContent=dist.toFixed(2)+" km";cCalories.textContent=Math.round(cal)+" kcal";cProgress.textContent=Math.min(100,Math.round(cardioElapsed/Math.max(1,(+cGoal.value||30)*60)*100))+"%"}
+function finishCardio(){let speed=+cSpeed.value||10,dist=speed*cardioElapsed/3600,cal=dist*data.weight*.9;data.sessions++;data.calories+=cal;data.distance+=dist;data.time+=cardioElapsed/60;data.history.unshift({date:new Date().toLocaleDateString("fr-FR"),name:"Cardio · Tapis",duration:Math.round(cardioElapsed/60),cal:Math.round(cal),dist:+dist.toFixed(2)});save();toast("Cardio enregistré ✓");closeModal();render()}
+function openHIIT(){startGuidedSession("Circuit training")}
+function startHIIT(){timerSec=0;openModal(`<div class="small">ROUND 1 / 8</div><h1>⚡ Effort</h1><div class="timerCircle running"><div class="timer" id="timer">00:30</div></div><button class="btn full" onclick="finishWorkout('HIIT')">✓ Terminer</button>`);let t=30;timer=setInterval(()=>{t--;document.getElementById("timer").textContent="00:"+String(t).padStart(2,"0");if(t<=0){clearInterval(timer);toast("Récupération !")}},1000)}
+function renderWeekPlan(){
+  const el=document.getElementById("weekPlan"), sum=document.getElementById("weekSummary");
+  if(!el||!sum)return;
+  if(!data.generated){sum.textContent="Génère ton programme depuis Profil.";el.innerHTML="";return}
+  sum.textContent=data.generated.goal+" · "+data.generated.level+" · "+data.generated.days+" jours";
+  const labels=["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"];
+  el.innerHTML=data.generated.week.map((p,i)=>`<div class="exercise" style="margin:7px 0">
+    <div class="thumb">${p==="Repos"?"😴":p.includes("Cardio")||p.includes("Tapis")||p.includes("Vélo")?"🏃":"🏋️"}</div>
+    <div class="grow"><b>${labels[i]}</b><div class="tag">${p}</div></div>
+    ${p==="Repos"?`<span class="pill">Repos</span>`:`<button class="btn" onclick="openDayPlanByWeek(${i})">▶ Séance</button>`}
+  </div>`).join("");
+}
+function openDayPlanByWeek(i){
+  const now=new Date();
+  const target=new Date(now.getFullYear(),now.getMonth(),now.getDate()-((now.getDay()+6)%7)+i);
+  openDayPlan(target.getDate(),target);
+}
+
+function renderHistory(){history.innerHTML=data.history.length?data.history.slice(0,8).map(h=>`<div class="exercise"><div class="thumb">${h.name.includes("Cardio")?"🏃":"🏋️"}</div><div class="grow"><b>${h.name}</b><div class="tag">${h.date} · ${h.duration} min · ${h.cal||0} kcal ${h.dist?"· "+h.dist+" km":""}</div></div><span class="pill">✓</span></div>`).join(""):`<p class="muted">Aucune séance enregistrée pour le moment.</p>`}
+function plannedProgram(day, dateObj=null){
+  const fallback=["Musculation · Haut du corps","Musculation · Bas du corps","Cardio · Tapis","Repos","Musculation · Haut du corps","Cardio + Abdos","Repos"];
+  const week=(data.generated&&data.generated.week)?data.generated.week:fallback;
+  const date=dateObj||new Date(new Date().getFullYear(),new Date().getMonth(),day);
+  const weekday=(date.getDay()+6)%7;
+  return week[weekday];
+}
+function openDayPlan(day,dateObj=null){
+  const date=dateObj||new Date(new Date().getFullYear(),new Date().getMonth(),day);
+  const p=plannedProgram(day,date);
+  const labels=["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"];
+  const weekday=labels[(date.getDay()+6)%7];
+  const dateLabel=date.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
+  const rest=p==="Repos";
+  const map={
+    "Haut du corps":[0,1,11,16,19,21],"Bas du corps":[5,6,7,9,10,22],"Push":[0,1,3,16,21],"Pull":[11,12,13,14,19,20],"Jambes":[5,6,7,8,9,10],
+    "Full body + HIIT":[5,0,11,22,30],"Full body":[5,0,11,16,22],"Cardio + abdos":[26,22,24],"Circuit training":[3,5,24,25,30],"Cardio":[26,27,28],
+    "Tapis · endurance":[26],"Intervalles":[26,30],"Vélo / rameur":[28,29],"Tapis · tempo":[26],"Cardio léger":[27],"Cardio doux":[27],"Full body léger":[3,5,22],"Mobilité + cardio":[27,22],"Marche active":[27]
+  };
+  const idxs=map[p]||[0,5,11,22];
+  const exercisesForDay=rest?[]:idxs.map(i=>exercises[i]);
+  openModal(`<div class="row"><div><div class="small">${weekday.toUpperCase()} · ${dateLabel}</div><h1>${p}</h1></div><button class="iconbtn" onclick="closeModal()">✕</button></div>
+  ${rest?`<div class="card" style="text-align:center;padding:35px"><div style="font-size:55px">😴</div><h2>Jour de repos</h2><p class="muted">Récupération, hydratation et sommeil. Les 2 jours de repos sont intégrés automatiquement.</p></div>`:
+  `<p class="muted">Séance prévue pour <b>${weekday}</b>. Ouvre un exercice pour voir la démonstration et lancer le chronomètre.</p>${exercisesForDay.map(e=>{const idx=exercises.indexOf(e);return `<div class="exercise"><div class="thumb">${e.icon}</div><div class="grow"><b>${e.name}</b><div class="tag">${e.muscle||""} · ${e.sets} × ${e.reps}</div></div><button class="btn" onclick="${idx>=0?`openExercise(${idx})`:`openCardio()`}">▶ Voir</button></div>`}).join("")}
+  <button class="btn green full" onclick="finishWorkout('${p.replace(/'/g,"\\'")}')">✓ Marquer la séance comme terminée</button>`}`);
+}
+function renderCalendar(){
+  let d=new Date(),y=d.getFullYear(),m=d.getMonth(),first=(new Date(y,m,1).getDay()+6)%7;
+  let days=new Date(y,m+1,0).getDate(),today=d.getDate();
+  const monthLabel=d.toLocaleDateString("fr-FR",{month:"long",year:"numeric"});
+  let s=`<div class="row" style="grid-column:1/-1;margin-bottom:4px"><h3 style="margin:0;text-transform:capitalize">${monthLabel}</h3><span class="pill">${data.generated?data.generated.days:5} + 2 repos</span></div>`;
+  s+=`<div class="calendar-weekdays" style="grid-column:1/-1"><span>Lun</span><span>Mar</span><span>Mer</span><span>Jeu</span><span>Ven</span><span>Sam</span><span>Dim</span></div>`;
+  for(let i=0;i<first;i++)s+="<div></div>";
+  for(let n=1;n<=days;n++){
+    const date=new Date(y,m,n),done=data.history.some(h=>h.date===date.toLocaleDateString("fr-FR"));
+    const p=plannedProgram(n,date),rest=p==="Repos",wd=date.toLocaleDateString("fr-FR",{weekday:"short"}).replace('.','');
+    const type=rest?"😴 Repos":p.includes("Cardio")||p.includes("Tapis")?"🏃 Cardio":"🏋️ Muscu";
+    s+=`<button class="day ${n===today?"today":""} ${done?"done":""}" onclick="openDayPlan(${n},new Date(${y},${m},${n}))"><b>${wd} ${n}</b><br><span style="font-size:10px">${type}</span>${done?"<br>✓": ""}</button>`;
+  }
+  calendar.innerHTML=s;
+}
+
+function renderCharts(){weightChart.innerHTML=data.weights.slice(-7).map(v=>`<div class="bar" style="height:${Math.max(18,(v-60)*4)}%"><span>${v}</span></div>`).join("");activityChart.innerHTML=[0,1,2,3,4,5,6].map((_,i)=>`<div class="bar" style="height:${Math.max(10,Math.min(100,(data.sessions-i*0.2)*18))}%"><span>${i+1}</span></div>`).join("")}
+
+function generateProgram(){
+  const goal=document.getElementById("gGoal").value;
+  const level=document.getElementById("gLevel").value;
+  const days=+document.getElementById("gDays").value;
+  const duration=document.getElementById("gDuration").value;
+  const plans={
+    "Prise de muscle":["Haut du corps","Bas du corps","Repos","Push","Pull","Jambes","Repos"],
+    "Perte de graisse":["Full body + HIIT","Cardio","Repos","Full body","Cardio + abdos","Circuit training","Repos"],
+    "Cardio / endurance":["Tapis · endurance","Intervalles","Repos","Vélo / rameur","Tapis · tempo","Cardio léger","Repos"],
+    "Remise en forme":["Full body léger","Cardio doux","Repos","Full body léger","Mobilité + cardio","Marche active","Repos"]
+  };
+  let week=[...plans[goal]];
+  if(days===3) week=[week[0],week[1],"Repos",week[3],"Repos",week[5],"Repos"];
+  if(days===4) week=[week[0],week[1],"Repos",week[3],week[4],week[5],"Repos"];
+  if(days===5) week=plans[goal];
+  const labels=["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"];
+  data.generated={goal,level,days,duration,week}; save();
+  document.getElementById("generatedProgram").innerHTML=`
+    <div class="card" style="background:#08182a">
+      <div class="row"><div><b>Programme personnalisé</b><div class="small">${goal} · ${level} · ${duration}</div></div><span class="pill">${days} entraînements</span></div>
+      <div style="margin-top:10px">${week.map((p,i)=>`<div class="exercise" style="margin:7px 0">
+        <div class="thumb">${p==="Repos"?"😴":p.includes("Cardio")||p.includes("Tapis")||p.includes("Vélo")?"🏃":"🏋️"}</div>
+        <div class="grow"><b>${labels[i]}</b><div class="tag">${p}</div></div>
+        <span class="pill">${p==="Repos"?"Repos":"Séance"}</span>
+      </div>`).join("")}</div>
+    </div>`;
+  toast("Programme personnalisé créé ✓");
+}
+function openCalendar(){toast("Sélectionne un programme puis démarre la séance pour l'ajouter à l'historique.")}
+render();
+</script>
+<div style="text-align:center;padding:12px;color:#789;font-size:11px">TLcoachfit V9 · vidéos réelles uniquement</div></body>
+</html>
